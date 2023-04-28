@@ -1,4 +1,4 @@
-import { EmotionServiceTag } from '@domain';
+import { EmotionServiceTag, Photo } from '@domain';
 import {
   Controller,
   FileTypeValidator,
@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { EmotionService } from './emotion.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiConsumes, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('Emotion')
 @Controller('emotion')
@@ -18,6 +18,7 @@ export class EmotionController {
   @Inject(EmotionServiceTag) private readonly service: EmotionService;
 
   @Post('detect')
+  @ApiResponse({ type: Photo })
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -38,7 +39,7 @@ export class EmotionController {
       }),
     )
     file: Express.Multer.File,
-  ): Promise<void> {
-    this.service.detect(file);
+  ): Promise<Array<any>> {
+    return this.service.detect(file);
   }
 }

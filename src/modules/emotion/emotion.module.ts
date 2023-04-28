@@ -4,9 +4,10 @@ import { EmotionService } from './emotion.service';
 import { EmotionController } from './emotion.controller';
 import { HttpModule } from '@nestjs/axios';
 import { FileModule } from '../files';
+import { PhotoModule } from '../photos';
 
 @Module({
-  imports: [HttpModule, FileModule],
+  imports: [HttpModule, FileModule, PhotoModule],
   controllers: [EmotionController],
   providers: [
     {

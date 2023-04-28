@@ -1,8 +1,11 @@
 import {
   EmotionResponse,
+  Emotions,
   FileServiceTag,
   IEmotionService,
   IFileService,
+  IPhotoService,
+  PhotoServiceTag,
 } from '@domain';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
@@ -10,7 +13,6 @@ import { AxiosError } from 'axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 // import FormData from 'form-data';
-import * as fs from 'fs';
 
 @Injectable()
 export class EmotionService implements IEmotionService {
@@ -21,7 +23,23 @@ export class EmotionService implements IEmotionService {
   @Inject(FileServiceTag)
   private readonly fileService: IFileService;
 
-  public async detect(file: Express.Multer.File): Promise<void> {
+  @Inject(PhotoServiceTag) private readonly photoService: IPhotoService;
+
+  public async getHighestEmotion(emotions: Emotions): Promise<string> {
+    let highestEmotion = '';
+    let highestValue = 0;
+
+    for (const [emotion, value] of Object.entries(emotions)) {
+      if (value > highestValue) {
+        highestEmotion = emotion;
+        highestValue = value;
+      }
+    }
+
+    return highestEmotion;
+  }
+
+  public async detect(file: Express.Multer.File): Promise<any> {
     if (!file) {
       throw new BadRequestException('Missing credentials');
     }
@@ -51,6 +69,15 @@ export class EmotionService implements IEmotionService {
         ),
     );
 
-    console.log(data.faces[0]);
+    const mainEmotion = await this.getHighestEmotion(data.faces[0].emotions);
+    console.log(mainEmotion);
+
+    const photos = await this.photoService.searchPhotos(
+      mainEmotion,
+      Math.floor(Math.random() * 120),
+      3,
+    );
+
+    return photos;
   }
 }

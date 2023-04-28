@@ -1,3 +1,3 @@
 export interface IEmotionService {
-  detect(file: Express.Multer.File): Promise<void>;
+  detect(file: Express.Multer.File): Promise<Array<any>>;
 }

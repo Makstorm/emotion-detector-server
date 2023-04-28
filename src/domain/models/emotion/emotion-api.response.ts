@@ -1,11 +1,15 @@
-class Face {
+export class Emotions {
+  [key: string]: number;
+}
+
+export class Face {
   public rectangle: {
     top: number;
     left: number;
     bottom: number;
     right: number;
   };
-  public emotions: any;
+  public emotions: Emotions;
 }
 
 export class EmotionResponse {
